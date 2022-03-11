@@ -247,22 +247,31 @@ class Window(QWidget):
 
     def _change_day_from_table(self, rown, a, day):
         row = list()
+        A = list()
         for i in range(a.columnCount()):
             try:
                 row.append(a.item(rown, i).text())
             except:
                 row.append(None)
-        if row[0] == '-' or row[0] == 'н' or row[0] == 'в':
-            if row[2] in work_time:
-                self.cursor.execute("update time_table set pos = '" + row[0] + "' where id = " + row[3] + ";")
-                self.cursor.execute("update time_table set subject = '" + row[1] + "' where id = " + row[3] + "")
-                self.cursor.execute(
-                    "update time_table set start_time = '" + row[2] + "' where id = " + row[3] + ";")
-                self.conn.commit()
+        for i in range(self.teacher_table.rowCount()):
+            try:
+                A.append(self.subject_table.item(i, 0).text())
+            except:
+                row.append(None)
+        if row[1] in A:
+            if row[0] == '-' or row[0] == 'н' or row[0] == 'в':
+                if row[2] in work_time:
+                    self.cursor.execute("update time_table set pos = '" + row[0] + "' where id = " + row[3] + ";")
+                    self.cursor.execute("update time_table set subject = '" + row[1] + "' where id = " + row[3] + "")
+                    self.cursor.execute(
+                        "update time_table set start_time = '" + row[2] + "' where id = " + row[3] + ";")
+                    self.conn.commit()
+                else:
+                    QMessageBox.about(self, "Error", "Введите стандартизированое время")
             else:
-                QMessageBox.about(self, "Error", "Введите стандартизированое время")
+                QMessageBox.about(self, "Error", "Введите положение недели 'в' - верхняя 'н' - няжняя  '-' - любая")
         else:
-            QMessageBox.about(self, "Error", "Введите положение недели 'в' - верхняя 'н' - няжняя  '-' - любая")
+            QMessageBox.about(self, "Error", "Такого предмета нет в базе данных")
         self._update_day_table(a, day)
 
     def _change_teacher_table(self, rown, a):
@@ -348,7 +357,7 @@ class Window(QWidget):
             else:
                 QMessageBox.about(self, "Error", "Введите положение недели 'в' - верхняя 'н' - няжняя  '-' - любая")
         else:
-            QMessageBox.about(self, "Error", "Такого предмета нет в БД")
+            QMessageBox.about(self, "Error", "Такого предмета нет в базе данных")
 
     def _add_teacher(self, rown, a):
         A = list()
